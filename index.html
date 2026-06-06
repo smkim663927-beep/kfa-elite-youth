@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFA Elite Performance - Athlete Analytics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <img src="kfa.png" alt="KFA" class="kfa-logo-img" onerror="this.style.display='none'">
+                <a href="#" class="logo" onclick="showSection('idp')">KFA ELITE</a>
+            </div>
+            <div class="header-right">
+                <nav>
+                    <ul class="nav-menu">
+                        <li id="menu-idp" onclick="showSection('idp')">ATHLETES</li>
+                        <li id="menu-library" onclick="showSection('library')">TACTICAL & TECH</li>
+                        <li id="menu-physical" onclick="showSection('physical')">PHYSICAL & REHAB</li>
+                        <li id="menu-match" onclick="showSection('match')">MATCH ANALYSIS</li>
+                        <li id="menu-inquiry" onclick="showSection('inquiry')">INQUIRY</li>
+                    </ul>
+                </nav>
+                <div class="korea-mark">
+                    <span class="trigrams">☰ ☲</span>
+                    <span>KFA MADE IN KOREA</span>
+                    <span class="trigrams">☵ ☷</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- SECTION 1: PLAYER IDP CARDS -->
+        <section id="section-idp">
+            <div class="section-header">
+                <h2 class="section-title">My Athletes</h2>
+                <button class="btn-add" onclick="showRegisterForm()">REGISTER PLAYER</button>
+            </div>
+            
+            <!-- List View -->
+            <div id="idp-list-view" class="card-grid">
+                <!-- Players list will be injected here -->
+            </div>
+
+            <!-- Detail View -->
+            <div id="idp-detail-view" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <button class="btn-add" style="background-color: var(--border-color); color: var(--text-primary);" onclick="backToAthleteList()">← BACK TO LIST</button>
+                    <div id="idp-detail-actions">
+                        <!-- Delete button will be injected here -->
+                    </div>
+                </div>
+                <div id="idp-detail-content">
+                    <!-- Detailed Player Info will be injected here -->
+                </div>
+            </div>
+
+            <!-- Register Form View -->
+            <div id="idp-register-view" style="display: none;">
+                <button class="btn-add" style="margin-bottom: 20px; background-color: var(--border-color); color: var(--text-primary);" onclick="cancelRegister()">← CANCEL</button>
+                <form id="register-form" onsubmit="submitPlayer(event)" class="form-card">
+                    <h3 style="margin-bottom: 20px;">New Athlete Registration</h3>
+                    
+                    <h4 class="section-subtitle" style="margin: 20px 0 10px 0;">Core Biometrics</h4>
+                    <div class="form-grid">
+                        <div class="form-group"><label>이름 (Name)</label><input type="text" id="reg-name" required></div>
+                        <div class="form-group"><label>생년월일 (DOB)</label><input type="text" id="reg-dob" placeholder="ex) 2008.01.01" required></div>
+                        <div class="form-group"><label>소속 학교 (School)</label><input type="text" id="reg-school" required></div>
+                        <div class="form-group"><label>소속팀 (Team)</label><input type="text" id="reg-team" placeholder="ex) KFA FC" required></div>
+                        <div class="form-group"><label>ALLECTA ONE (Team)</label><input type="text" id="reg-allecta" placeholder="ex) Allecta Elite" required></div>
+                        <div class="form-group"><label>포지션 (Position)</label><input type="text" id="reg-pos" placeholder="ex) LW/ST, CM, CB" required></div>
+                        <div class="form-group"><label>주발 (Main Foot)</label><input type="text" id="reg-foot" placeholder="ex) 오른발, 왼발, 양발" required></div>
+                        <div class="form-group">
+                            <label>발 수치 (Foot Rating: Left/Right)</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="number" id="reg-foot-left" min="1" max="5" value="5" style="width: 60px;" required>
+                                <span>/</span>
+                                <input type="number" id="reg-foot-right" min="1" max="5" value="5" style="width: 60px;" required>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>키 (Height)</label><input type="text" id="reg-height" placeholder="ex) 175cm" required></div>
+                        <div class="form-group"><label>몸무게 (Weight)</label><input type="text" id="reg-weight" placeholder="ex) 65kg" required></div>
+                    </div>
+
+                    <h4 class="section-subtitle" style="margin: 30px 0 10px 0;">Performance Metrics (1-5 Scale)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">TECHNICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>드리블</label><input type="number" id="reg-t-dribble" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>패싱 & 리시빙</label><input type="number" id="reg-t-pass" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>볼 컨트롤</label><input type="number" id="reg-t-control" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>헤딩</label><input type="number" id="reg-t-heading" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>1v1 수비</label><input type="number" id="reg-t-defense" min="1" max="5" value="3"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">TACTICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>공격 가담</label><input type="number" id="reg-ta-attacking" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>공간 활용 & 창출</label><input type="number" id="reg-ta-space" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>볼 받는 움직임</label><input type="number" id="reg-ta-movement" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>수비 위치선정</label><input type="number" id="reg-ta-positioning" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>포지에 대한 이해</label><input type="number" id="reg-ta-understanding" min="1" max="5" value="3"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">PHYSICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>스피드</label><input type="number" id="reg-p-speed" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>민첩성</label><input type="number" id="reg-p-agility" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>순발력</label><input type="number" id="reg-p-explosiveness" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>상황인지</label><input type="number" id="reg-p-awareness" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>코디네이션 & 밸런스</label><input type="number" id="reg-p-balance" min="1" max="5" value="3"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">PSYCHOLOGICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>창의성</label><input type="number" id="reg-m-creativity" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>적극성</label><input type="number" id="reg-m-aggressiveness" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>자신감</label><input type="number" id="reg-m-confidence" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>협동심</label><input type="number" id="reg-m-cooperation" min="1" max="5" value="3"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>선택 & 결정</label><input type="number" id="reg-m-decision" min="1" max="5" value="3"></div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-subtitle" style="margin: 30px 0 10px 0;">Strategic Feedback</h4>
+                    <div class="form-group">
+                        <label>피드백 (Strategic Feedback)</label>
+                        <textarea id="reg-feedback" style="background-color: var(--bg-dark); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; font-family: inherit; height: 100px;" required></textarea>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>훈련 집중 과제 (Development Focus)</label>
+                        <input type="text" id="reg-focus" placeholder="ex) 인터벌 트레이닝 추가" required>
+                    </div>
+
+                    <button type="submit" class="btn-add" style="margin-top: 30px; width: 100%;">SAVE ATHLETE</button>
+                </form>
+            </div>
+
+            <!-- Edit Form View -->
+            <div id="idp-edit-view" style="display: none;">
+                <button class="btn-add" style="margin-bottom: 20px; background-color: var(--border-color); color: var(--text-primary);" onclick="cancelEdit()">← CANCEL</button>
+                <form id="edit-form" onsubmit="updatePlayer(event)" class="form-card">
+                    <input type="hidden" id="edit-index">
+                    <h3 style="margin-bottom: 20px;">Edit Athlete Profile</h3>
+                    
+                    <h4 class="section-subtitle" style="margin: 20px 0 10px 0;">Core Biometrics</h4>
+                    <div class="form-grid">
+                        <div class="form-group"><label>이름 (Name)</label><input type="text" id="edit-name" required></div>
+                        <div class="form-group"><label>생년월일 (DOB)</label><input type="text" id="edit-dob" required></div>
+                        <div class="form-group"><label>소속 학교 (School)</label><input type="text" id="edit-school" required></div>
+                        <div class="form-group"><label>소속팀 (Team)</label><input type="text" id="edit-team" required></div>
+                        <div class="form-group"><label>ALLECTA ONE (Team)</label><input type="text" id="edit-allecta" required></div>
+                        <div class="form-group"><label>포지션 (Position)</label><input type="text" id="edit-pos" required></div>
+                        <div class="form-group"><label>주발 (Main Foot)</label><input type="text" id="edit-foot" required></div>
+                        <div class="form-group">
+                            <label>발 수치 (Foot Rating: Left/Right)</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="number" id="edit-foot-left" min="1" max="5" required>
+                                <span>/</span>
+                                <input type="number" id="edit-foot-right" min="1" max="5" required>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>키 (Height)</label><input type="text" id="edit-height" required></div>
+                        <div class="form-group"><label>몸무게 (Weight)</label><input type="text" id="edit-weight" required></div>
+                    </div>
+
+                    <h4 class="section-subtitle" style="margin: 30px 0 10px 0;">Performance Metrics (1-5 Scale)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">TECHNICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>드리블</label><input type="number" id="edit-t-dribble" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>패싱 & 리시빙</label><input type="number" id="edit-t-pass" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>볼 컨트롤</label><input type="number" id="edit-t-control" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>헤딩</label><input type="number" id="edit-t-heading" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>1v1 수비</label><input type="number" id="edit-t-defense" min="1" max="5"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">TACTICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>공격 가담</label><input type="number" id="edit-ta-attacking" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>공간 활용 & 창출</label><input type="number" id="edit-ta-space" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>볼 받는 움직임</label><input type="number" id="edit-ta-movement" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>수비 위치선정</label><input type="number" id="edit-ta-positioning" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>포지에 대한 이해</label><input type="number" id="edit-ta-understanding" min="1" max="5"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">PHYSICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>스피드</label><input type="number" id="edit-p-speed" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>민첩성</label><input type="number" id="edit-p-agility" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>순발력</label><input type="number" id="edit-p-explosiveness" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>상황인지</label><input type="number" id="edit-p-awareness" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>코디네이션 & 밸런스</label><input type="number" id="edit-p-balance" min="1" max="5"></div>
+                        </div>
+                        <div>
+                            <p style="font-size: 13px; font-weight: 800; margin-bottom: 10px; color: var(--text-secondary);">PSYCHOLOGICAL</p>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>창의성</label><input type="number" id="edit-m-creativity" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>적극성</label><input type="number" id="edit-m-aggressiveness" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>자신감</label><input type="number" id="edit-m-confidence" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>협동심</label><input type="number" id="edit-m-cooperation" min="1" max="5"></div>
+                            <div class="form-group" style="margin-bottom: 10px;"><label>선택 & 결정</label><input type="number" id="edit-m-decision" min="1" max="5"></div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-subtitle" style="margin: 30px 0 10px 0;">Strategic Feedback</h4>
+                    <div class="form-group">
+                        <label>피드백 (Strategic Feedback)</label>
+                        <textarea id="edit-feedback" style="background-color: var(--bg-dark); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; font-family: inherit; height: 100px;" required></textarea>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>훈련 집중 과제 (Development Focus)</label>
+                        <input type="text" id="edit-focus" required>
+                    </div>
+
+                    <button type="submit" class="btn-add" style="margin-top: 30px; width: 100%;">UPDATE ATHLETE</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TRAINING LIBRARY -->
+        <section id="section-library">
+            <div class="section-header">
+                <h2 class="section-title">Tactical & Tech Training</h2>
+                <div class="filter-group">
+                    <span class="tag active">ALL</span>
+                    <span class="tag">TACTICAL</span>
+                    <span class="tag">TECHNICAL</span>
+                </div>
+            </div>
+            
+            <div id="library-list-view" class="card-grid"></div>
+            
+            <div id="library-detail-view" style="display: none;">
+                <button class="btn-add" style="margin-bottom: 20px; background-color: var(--border-color); color: var(--text-primary);" onclick="backToLibraryList()">← BACK TO LIST</button>
+                <div id="library-detail-content"></div>
+                
+                <!-- DISQUS COMMENTS -->
+                <div id="disqus_thread" style="margin-top: 40px; background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PHYSICAL & REHAB -->
+        <section id="section-physical">
+            <div class="section-header">
+                <h2 class="section-title">Physical & Rehab</h2>
+            </div>
+
+            <div id="physical-list-view" class="card-grid"></div>
+            
+            <div id="physical-detail-view" style="display: none;">
+                <button class="btn-add" style="margin-bottom: 20px; background-color: var(--border-color); color: var(--text-primary);" onclick="backToPhysicalList()">← BACK TO LIST</button>
+                <div id="physical-detail-content"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MATCH ANALYSIS -->
+        <section id="section-match">
+            <div class="section-header">
+                <h2 class="section-title">Match Analysis Board</h2>
+            </div>
+            <div id="match-grid" class="card-grid">
+                <!-- Match items will be injected here -->
+            </div>
+        </section>
+
+        <!-- SECTION 5: INQUIRY (Placeholder) -->
+        <section id="section-inquiry">
+            <div class="section-header">
+                <h2 class="section-title">Inquiry</h2>
+            </div>
+            <div class="empty-state">
+                <p>시스템 문의 및 관리자 연락 섹션입니다.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>

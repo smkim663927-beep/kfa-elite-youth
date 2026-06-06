@@ -1,0 +1,630 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+:root {
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #2a2a2a;
+    --accent-color: #ffffff;
+    --warning-red: #ff4d4d;
+    --tag-bg: #333333;
+    --progress-bg: #2a2a2a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+main section {
+    display: none; /* 기본적으로 모든 섹션 숨김 */
+}
+
+/* Header */
+header {
+    background-color: rgba(18, 18, 18, 0.95);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.header-content {
+    max-width: 1400px; /* 넓게 확장 */
+    margin: 0 auto;
+    height: 80px; /* 높이 소폭 증가 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 15px -> 20px */
+}
+
+.kfa-logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.logo {
+    font-size: 26px; /* 20px에서 26px로 확대 */
+    font-weight: 900;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: 6px 12px;
+    border: 2px solid var(--text-primary);
+    white-space: nowrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* 60px -> 40px (원복) */
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 35px; /* 간격 소폭 증가 */
+}
+
+.nav-menu li {
+    font-size: 16px; /* 13px에서 16px로 확대 */
+    font-weight: 800;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.3s;
+    letter-spacing: 0.5px;
+}
+
+.nav-menu li:hover, .nav-menu li.active {
+    color: var(--text-primary);
+}
+
+.korea-mark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    border-left: 1px solid var(--border-color);
+    padding-left: 30px;
+}
+
+.trigrams {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px; /* 상하 여백 약간 복구하여 타이틀 숨막힘 방지 */
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 34px; /* 28px에서 34px로 확대 */
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+
+/* Buttons */
+.btn-add {
+    background-color: var(--text-primary);
+    color: var(--bg-dark);
+    border: none;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Grid Layout */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+}
+
+/* Generic Card Styles */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #444;
+}
+
+/* Tags */
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* Detailed Data Tables for Cards */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px; /* 11px -> 14px */
+}
+
+.detail-table th, .detail-table td {
+    padding: 12px 6px; /* 패딩 증가 */
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: top;
+}
+
+.detail-table th {
+    color: var(--text-secondary);
+    font-weight: 700;
+    width: 30%;
+}
+
+.detail-table td {
+    color: var(--text-primary);
+}
+
+.detail-table tr:last-child th, .detail-table tr:last-child td {
+    border-bottom: none;
+}
+
+.tag {
+    background-color: var(--tag-bg);
+    color: var(--text-primary);
+    font-size: 12px; /* 10px -> 12px */
+    font-weight: 700;
+    padding: 6px 10px; /* 패딩 증가 */
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.tag.accent {
+    background-color: #fff;
+    color: #000;
+}
+
+.tag.warning {
+    background-color: var(--warning-red);
+    color: #fff;
+}
+
+/* Player Card Specifics */
+.player-name {
+    font-size: 26px; /* 20px -> 26px */
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.player-feedback {
+    font-size: 15px; /* 13px -> 15px */
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    min-height: 40px;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* 12px -> 16px */
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 6px -> 8px */
+}
+
+.stat-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px; /* 11px -> 14px */
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.stat-info span:last-child {
+    color: var(--text-primary);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px; /* 4px -> 6px */
+    background-color: var(--progress-bg);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--accent-color);
+    border-radius: 3px;
+}
+
+/* Library & Match Card Specifics */
+.card-title {
+    font-size: 24px; /* 18px -> 24px */
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.info-label {
+    font-size: 14px; /* 11px -> 14px */
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-top: 16px;
+    margin-bottom: 6px;
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+.info-text {
+    font-size: 15px; /* 13px -> 15px */
+    color: var(--text-primary);
+}
+
+.warning-text {
+    color: var(--warning-red);
+    font-weight: 800;
+    font-size: 13px;
+    margin-top: 16px;
+    border: 1px solid var(--warning-red);
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Match Section Specifics */
+.match-grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+}
+
+.split-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 100px 0;
+    color: var(--text-secondary);
+}
+
+/* Forms */
+.form-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+.form-group input {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #fff;
+}
+
+/* Player Detail View Enhancements */
+.analysis-container {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 40px;
+    border: 1px solid var(--border-color);
+}
+
+.analysis-section {
+    margin-bottom: 30px;
+}
+
+.section-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 30px 0;
+    border: none;
+}
+
+.section-subtitle {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+/* Biometrics */
+.biometrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.biometrics-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.biometrics-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bio-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.bio-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+/* Performance Metrics */
+.metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.metric-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.metric-percentage {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+/* Strategic Feedback */
+.feedback-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 24px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* Biometrics Layout */
+.biometrics-header {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.bio-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.bio-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Position Map */
+.position-map-container {
+    width: 200px;
+    height: 140px;
+    background-color: #2e7d32; /* Grass green */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pitch-line {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.pitch-outline {
+    top: 5px; bottom: 5px; left: 5px; right: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.pitch-center-line {
+    top: 5px; bottom: 5px; left: 50%;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.pitch-center-circle {
+    top: 50%; left: 50%; width: 40px; height: 40px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.pos-marker {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--warning-red);
+    color: white;
+    font-size: 10px;
+    font-weight: 900;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    border: 2px solid white;
+    z-index: 10;
+}
+
+/* 5-Point Scale Metrics */
+.metrics-category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.rating-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.rating-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.rating-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background-color: var(--progress-bg);
+}
+
+.dot.active {
+    background-color: var(--accent-color);
+}
+
+/* Strategic Feedback Section */
+.feedback-container {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+}
+
+.comment-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.focus-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 8px 8px 0;
+    padding: 20px;
+}
+
+.focus-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.focus-content {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .header-content { height: auto; padding: 15px 20px; flex-direction: column; gap: 15px; }
+    .nav-menu { gap: 15px; flex-wrap: wrap; justify-content: center; }
+    .form-grid { grid-template-columns: 1fr; }
+    .biometrics-header { grid-template-columns: 1fr; }
+    .metrics-category-grid { grid-template-columns: 1fr; }
+    .feedback-container { grid-template-columns: 1fr; }
+}
