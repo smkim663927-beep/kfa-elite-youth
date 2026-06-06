@@ -219,11 +219,17 @@
         <!-- SECTION 2: TRAINING LIBRARY -->
         <section id="section-library">
             <div class="section-header">
-                <h2 class="section-title">Tactical & Tech Training</h2>
-                <div class="filter-group">
-                    <span class="tag active">ALL</span>
-                    <span class="tag">TACTICAL</span>
-                    <span class="tag">TECHNICAL</span>
+                <div>
+                    <h2 class="section-title">GBT Training Log</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">지도자용 훈련 데이터베이스 및 연구 아카이브</p>
+                </div>
+                <div class="filter-group" style="display: flex; gap: 15px; align-items: center;">
+                    <div style="position: relative;">
+                        <input type="text" id="library-search" placeholder="태그 검색 (예: #빌드업)" 
+                               style="background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 200px;"
+                               oninput="filterLibrary()">
+                    </div>
+                    <span class="tag active" onclick="resetLibraryFilter()">ALL</span>
                 </div>
             </div>
             

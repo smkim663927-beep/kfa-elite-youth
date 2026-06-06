@@ -29,6 +29,7 @@ function showSection(sectionId) {
     if (sectionId === 'library') {
         document.getElementById('library-detail-view').style.display = 'none';
         document.getElementById('library-list-view').style.display = 'grid';
+        resetLibraryFilter();
     }
     if (sectionId === 'physical') {
         document.getElementById('physical-detail-view').style.display = 'none';
@@ -530,23 +531,48 @@ function loadDisqus(identifier, url, title) {
 // 2. TACTICAL & TECH (Library) 로직
 // ==========================================
 
-function renderLibrary() {
+function renderLibrary(filterTag = '') {
     const listGrid = document.getElementById('library-list-view');
     if (!listGrid) return;
     
-    listGrid.innerHTML = library.map((i, index) => `
-        <div class="card" style="cursor: pointer;" onclick="viewLibrary(${index})">
+    const filteredData = filterTag 
+        ? library.filter(i => i.tags.some(tag => tag.toLowerCase().includes(filterTag.toLowerCase())))
+        : library;
+
+    if (filteredData.length === 0) {
+        listGrid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">'${filterTag}' 태그가 포함된 훈련이 없습니다.</div>`;
+        return;
+    }
+
+    listGrid.innerHTML = filteredData.map((i, index) => `
+        <div class="card" onclick="viewLibrary(${library.indexOf(i)})">
             <div class="tag-list" style="margin-bottom: 12px;">
-                ${i.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+                ${i.tags.map(t => `<span class="hashtag-chip" onclick="event.stopPropagation(); setLibraryFilter('${t}')">${t}</span>`).join('')}
             </div>
             <h3 class="card-title">${i.name}</h3>
             <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">대상: ${i.age} | ${i.level}</p>
             <p class="info-text" style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">${i.purpose}</p>
-            <div style="margin-top: 20px; font-size: 11px; font-weight: 800; color: var(--text-secondary); text-align: right;">
+            
+            <div class="card-footer-link">
                 VIEW TRAINING LOG →
             </div>
         </div>
     `).join('');
+}
+
+function filterLibrary() {
+    const query = document.getElementById('library-search').value;
+    renderLibrary(query);
+}
+
+function setLibraryFilter(tag) {
+    document.getElementById('library-search').value = tag;
+    renderLibrary(tag);
+}
+
+function resetLibraryFilter() {
+    document.getElementById('library-search').value = '';
+    renderLibrary();
 }
 
 function viewLibrary(index) {
