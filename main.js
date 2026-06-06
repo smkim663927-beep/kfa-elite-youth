@@ -121,6 +121,31 @@ function renderPositionMap(activePosString) {
     `;
 }
 
+function renderPlayers() {
+    const listGrid = document.getElementById('idp-list-view');
+    if (!listGrid) return;
+    
+    listGrid.innerHTML = players.map((p, index) => `
+        <div class="card" style="cursor: pointer; position: relative;" onclick="viewAthlete(${index})">
+            <div class="tag-container">
+                <span class="tag accent">${p.basic.pos}</span>
+                <span class="tag">${getFootDisplay(p)}</span>
+            </div>
+            <h3 class="player-name">${p.name}</h3>
+            <p class="player-feedback" style="margin-bottom: 15px; font-size: 12px; color: var(--text-secondary);">
+                ${p.match.feedback}
+            </p>
+            <div class="stats-container">
+                ${renderStat('OVERALL TECH', p.stats.tech)}
+                ${renderStat('OVERALL PHYS', p.stats.phys)}
+            </div>
+            <div style="margin-top: 20px; font-size: 11px; font-weight: 800; color: var(--text-secondary); text-align: right;">
+                CLICK TO VIEW DETAILS →
+            </div>
+        </div>
+    `).join('');
+}
+
 function viewAthlete(index) {
     const p = players[index];
     
