@@ -554,6 +554,53 @@ function viewLibrary(index) {
     document.getElementById('library-list-view').style.display = 'none';
     document.getElementById('library-detail-view').style.display = 'block';
 
+    // Tactical Diagram SVG helper
+    const renderTacticalDiagram = (type) => {
+        if (type === 'u12-rondo') {
+            return `
+                <svg viewBox="0 0 100 80" class="pitch-svg" style="background-color: #1a3a1a; border-radius: 8px;">
+                    <rect x="20" y="10" width="60" height="60" class="pitch-line" stroke-dasharray="2" />
+                    <!-- Players -->
+                    <circle cx="50" cy="15" r="3" fill="#E00000" /> <!-- Attacker 1 -->
+                    <circle cx="50" cy="65" r="3" fill="#E00000" /> <!-- Attacker 2 -->
+                    <circle cx="25" cy="40" r="3" fill="#E00000" /> <!-- Attacker 3 -->
+                    <circle cx="75" cy="40" r="3" fill="#E00000" /> <!-- Attacker 4 -->
+                    <circle cx="45" cy="40" r="3" fill="#fff" /> <!-- Defender 1 -->
+                    <circle cx="55" cy="40" r="3" fill="#fff" /> <!-- Defender 2 -->
+                    <!-- Ball -->
+                    <circle cx="30" cy="35" r="2" fill="#FFD700" />
+                    <!-- Movement Arrow -->
+                    <path d="M 32 35 Q 50 35 68 38" fill="none" stroke="#FFD700" stroke-width="1" stroke-dasharray="2" marker-end="url(#arrow)" />
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#FFD700" />
+                        </marker>
+                    </defs>
+                </svg>`;
+        } else {
+            return `
+                <svg viewBox="0 0 100 80" class="pitch-svg" style="background-color: #1a3a1a; border-radius: 8px;">
+                    <rect x="5" y="5" width="90" height="70" class="pitch-line" />
+                    <line x1="50" y1="5" x2="50" y2="75" class="pitch-line" />
+                    <circle cx="50" cy="40" r="10" class="pitch-line" />
+                    <!-- Defenders -->
+                    <circle cx="40" cy="20" r="3" fill="#E00000" />
+                    <circle cx="40" cy="40" r="3" fill="#E00000" />
+                    <circle cx="40" cy="60" r="3" fill="#E00000" />
+                    <!-- Attackers -->
+                    <circle cx="60" cy="30" r="3" fill="#fff" />
+                    <circle cx="60" cy="50" r="3" fill="#fff" />
+                    <!-- Action -->
+                    <path d="M 58 30 L 42 22" fill="none" stroke="#FFD700" stroke-width="1.5" marker-end="url(#arrow2)" />
+                    <defs>
+                        <marker id="arrow2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#FFD700" />
+                        </marker>
+                    </defs>
+                </svg>`;
+        }
+    };
+
     const detailContent = document.getElementById('library-detail-content');
     detailContent.innerHTML = `
         <div class="training-split-container">
@@ -602,16 +649,13 @@ function viewLibrary(index) {
             <!-- Right Panel: Media & Tactical Board -->
             <div class="training-media-panel">
                 <span class="gbt-label">미디어 분석 (Media Analysis)</span>
-                <div class="video-placeholder">
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.2); font-weight: 900; font-size: 12px; text-align: center;">
-                        <span style="font-size: 30px; display: block; margin-bottom: 10px;">▶</span>
-                        TRAINING VIDEO PREVIEW
-                    </div>
+                <div class="video-placeholder" style="background: #000;">
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${i.videoId || '2_kI57G5YI0'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
 
                 <span class="gbt-label">전술 시각화 (Tactical Visualization)</span>
-                <div class="tactical-canvas-placeholder">
-                    <div class="placeholder-icon">📋</div>
+                <div class="position-map-container" style="height: auto; aspect-ratio: 4/3; background: #1a3a1a; padding: 10px;">
+                    ${renderTacticalDiagram(i.diagramType)}
                 </div>
 
                 <div class="gbt-content-box" style="background-color: rgba(224, 0, 0, 0.05); border-color: rgba(224, 0, 0, 0.2);">
@@ -767,6 +811,8 @@ const library = [
         age: "U-12",
         level: "중급",
         tags: ["#U-12", "#빌드업", "#공간창출", "#GBT"], 
+        videoId: "2_kI57G5YI0", // 예시 유튜브 ID (Rondo training)
+        diagramType: "u12-rondo",
         purpose: "공간 창출 및 패스 네트워크 형성", 
         objective: "중앙 밀집 지역에서 3자 패스(Third Man Run)를 활용한 압박 탈출",
         personnel: "8명 (4:4 또는 5:3)",
@@ -784,6 +830,8 @@ const library = [
         age: "U-15",
         level: "고급",
         tags: ["#U-15", "#전방압박", "#트랜지션", "#GBT"], 
+        videoId: "6D22e6I-Nn0", // 예시 유튜브 ID (Pressing training)
+        diagramType: "u15-pressing",
         purpose: "상대 빌드업 차단 및 즉각적인 역습", 
         objective: "상대 센터백의 패스 길목 차단 후 볼 탈취 시 5초 이내 슈팅",
         personnel: "14명 (7:7)",
