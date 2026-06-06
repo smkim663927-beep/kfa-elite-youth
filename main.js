@@ -811,7 +811,7 @@ const library = [
         age: "U-12",
         level: "중급",
         tags: ["#U-12", "#빌드업", "#공간창출", "#GBT"], 
-        videoId: "2_kI57G5YI0", // 예시 유튜브 ID (Rondo training)
+        videoId: "fXidR_M-mAc", // New reliable video ID (Coaching Manual)
         diagramType: "u12-rondo",
         purpose: "공간 창출 및 패스 네트워크 형성", 
         objective: "중앙 밀집 지역에서 3자 패스(Third Man Run)를 활용한 압박 탈출",
@@ -830,7 +830,7 @@ const library = [
         age: "U-15",
         level: "고급",
         tags: ["#U-15", "#전방압박", "#트랜지션", "#GBT"], 
-        videoId: "6D22e6I-Nn0", // 예시 유튜브 ID (Pressing training)
+        videoId: "6D22e6I-Nn0", 
         diagramType: "u15-pressing",
         purpose: "상대 빌드업 차단 및 즉각적인 역습", 
         objective: "상대 센터백의 패스 길목 차단 후 볼 탈취 시 5초 이내 슈팅",
