@@ -536,15 +536,14 @@ function renderLibrary() {
     
     listGrid.innerHTML = library.map((i, index) => `
         <div class="card" style="cursor: pointer;" onclick="viewLibrary(${index})">
-            <div class="tag-container">
-                <span class="tag accent">${i.level}</span>
-                ${i.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            <div class="tag-list" style="margin-bottom: 12px;">
+                ${i.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
             </div>
             <h3 class="card-title">${i.name}</h3>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">대상 연령: ${i.age}</p>
-            <p class="info-text" style="color: var(--text-secondary);">${i.purpose}</p>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">대상: ${i.age} | ${i.level}</p>
+            <p class="info-text" style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">${i.purpose}</p>
             <div style="margin-top: 20px; font-size: 11px; font-weight: 800; color: var(--text-secondary); text-align: right;">
-                CLICK TO VIEW DETAILS →
+                VIEW TRAINING LOG →
             </div>
         </div>
     `).join('');
@@ -557,24 +556,69 @@ function viewLibrary(index) {
 
     const detailContent = document.getElementById('library-detail-content');
     detailContent.innerHTML = `
-        <div class="card">
-            <div class="tag-container">
-                <span class="tag accent">${i.level}</span>
-                ${i.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        <div class="training-split-container">
+            <!-- Left Panel: Content -->
+            <div class="training-info-panel">
+                <div>
+                    <div class="tag-list">
+                        ${i.tags.map(t => `<span class="hashtag-chip">${t}</span>`).join('')}
+                    </div>
+                    <h3 class="card-title" style="font-size: 32px; margin-bottom: 10px;">${i.name}</h3>
+                    <p style="color: var(--text-secondary); font-weight: 700;">GBT Research Archive | ${i.age} 세션</p>
+                </div>
+
+                <div class="gbt-content-box">
+                    <span class="gbt-label">훈련 목표 (Training Objective)</span>
+                    <div class="gbt-text" style="font-weight: 800; color: var(--accent-color);">
+                        ${i.objective || i.purpose}
+                    </div>
+                </div>
+
+                <div class="gbt-content-box">
+                    <span class="gbt-label">구성 및 진행 (Organization & Process)</span>
+                    <ul class="process-list">
+                        ${(i.organization || i.flow).split('\n').map(step => `
+                            <li class="process-item">${step.trim()}</li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                <div class="gbt-content-box">
+                    <span class="gbt-label">코칭 포인트 (Coaching Points)</span>
+                    <div class="gbt-text">${i.points}</div>
+                </div>
+
+                <div class="gbt-content-box">
+                    <span class="gbt-label">세부 데이터 (Session Details)</span>
+                    <table class="detail-table" style="margin-top: 0;">
+                        <tr><th>필요 인원</th><td>${i.personnel}</td></tr>
+                        <tr><th>필요 장비</th><td>${i.equip}</td></tr>
+                        <tr><th>공간 규격</th><td>${i.space}</td></tr>
+                        <tr><th>변형 규칙</th><td>${i.rules}</td></tr>
+                    </table>
+                </div>
             </div>
-            <h3 class="card-title" style="font-size: 24px; margin-bottom: 20px;">${i.name}</h3>
-            <table class="detail-table">
-                <tr><th>대상 연령</th><td>${i.age}</td></tr>
-                <tr><th>목적</th><td>${i.purpose}</td></tr>
-                <tr><th>필요 인원</th><td>${i.personnel}</td></tr>
-                <tr><th>필요 장비</th><td>${i.equip}</td></tr>
-                <tr><th>공간</th><td>${i.space}</td></tr>
-                <tr><th>진행 방식</th><td>${i.flow}</td></tr>
-                <tr><th>코칭 포인트</th><td>${i.points}</td></tr>
-                <tr><th>변형 규칙</th><td>${i.rules}</td></tr>
-                <tr><th>평가 지표</th><td>${i.metrics}</td></tr>
-                <tr><th>현장 후기</th><td>${i.review}</td></tr>
-            </table>
+
+            <!-- Right Panel: Media & Tactical Board -->
+            <div class="training-media-panel">
+                <span class="gbt-label">미디어 분석 (Media Analysis)</span>
+                <div class="video-placeholder">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.2); font-weight: 900; font-size: 12px; text-align: center;">
+                        <span style="font-size: 30px; display: block; margin-bottom: 10px;">▶</span>
+                        TRAINING VIDEO PREVIEW
+                    </div>
+                </div>
+
+                <span class="gbt-label">전술 시각화 (Tactical Visualization)</span>
+                <div class="tactical-canvas-placeholder">
+                    <div class="placeholder-icon">📋</div>
+                </div>
+
+                <div class="gbt-content-box" style="background-color: rgba(224, 0, 0, 0.05); border-color: rgba(224, 0, 0, 0.2);">
+                    <span class="gbt-label" style="color: #ff4d4d;">지도자 연구 후기 (Coach's Review)</span>
+                    <div class="gbt-text" style="font-style: italic;">"${i.review}"</div>
+                </div>
+            </div>
         </div>
     `;
 
@@ -719,19 +763,38 @@ const players = [
 
 const library = [
     { 
-        name: "4대2 로 rondo를 활용한 탈압박 훈련", 
-        age: "U10, U12, U15",
+        name: "U-12 론도를 통한 3인 연계 탈압박", 
+        age: "U-12",
         level: "중급",
-        tags: ["Tactical", "Technical"], 
-        purpose: "스캐닝, 패스 타이밍, 삼각형 형성", 
-        personnel: "8~12명",
-        equip: "콘, 조끼, 공",
-        space: "15m x 15m",
+        tags: ["#U-12", "#빌드업", "#공간창출", "#GBT"], 
+        purpose: "공간 창출 및 패스 네트워크 형성", 
+        objective: "중앙 밀집 지역에서 3자 패스(Third Man Run)를 활용한 압박 탈출",
+        personnel: "8명 (4:4 또는 5:3)",
+        equip: "콘 4개, 조끼 2색, 공 5개",
+        space: "15m x 15m 사각형",
+        organization: "1. 15x15 구역 내에서 4대2 론도 실시\n2. 5회 패스 성공 시 반대편 전진 패스 허용\n3. 수비 성공 시 압박자와 역할 교대",
         flow: "4대2 → 5대3 → 방향 전환 추가",
-        points: "공 받기 전 고개 들기, 몸 방향 열기", 
-        rules: "투터치 제한, 원터치 보너스, 압박자 추가",
-        metrics: "패스 성공률, 전진 패스 횟수, 스캐닝 빈도",
-        review: "탈압박 상황에서 어린 선수들의 상황 인식 속도가 눈에 띄게 개선됨."
+        points: "열린 자세 유지, 패스 후 즉각적인 이동, 시야 확보(스캐닝)", 
+        rules: "투터치 제한, 원터치 성공 시 가산점",
+        metrics: "패스 성공률, 전진 패스 성공 횟수",
+        review: "초등부 선수들의 경우 첫 터치의 방향 설정에 따라 압박 탈출 성공률이 크게 좌우됨."
+    },
+    { 
+        name: "전방 압박 체계 구축 및 트랜지션", 
+        age: "U-15",
+        level: "고급",
+        tags: ["#U-15", "#전방압박", "#트랜지션", "#GBT"], 
+        purpose: "상대 빌드업 차단 및 즉각적인 역습", 
+        objective: "상대 센터백의 패스 길목 차단 후 볼 탈취 시 5초 이내 슈팅",
+        personnel: "14명 (7:7)",
+        equip: "정규 골대 2개, 콘 다수",
+        space: "반 코트 (50m x 40m)",
+        organization: "1. 수비 팀은 하프라인부터 강한 압박 시작\n2. 볼 탈취 시 최전방 공격수에게 즉시 연결\n3. 공격 팀은 윙백을 활용한 탈압박 시도",
+        flow: "부분 전술 훈련 → 7대7 미니 게임",
+        points: "수비 간격 유지, 커버 섀도우 활용, 빠른 공수 전환", 
+        rules: "볼 탈취 후 골 성공 시 2점",
+        metrics: "볼 탈취 지점 평균 높이, 슈팅 전환 시간",
+        review: "선수들의 체력 소모가 크므로 세션 간 휴식 시간을 철저히 관리해야 함."
     }
 ];
 

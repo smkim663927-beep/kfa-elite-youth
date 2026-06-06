@@ -635,7 +635,140 @@ header {
     color: var(--text-primary);
 }
 
+/* GBT Training Log - Split Layout */
+.training-split-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.training-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.training-media-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 100px;
+}
+
+/* Hashtag Chip UI */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.hashtag-chip {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hashtag-chip:hover {
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+/* Tactical Board Placeholder */
+.tactical-canvas-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background-color: #1a3a1a;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: not-allowed;
+}
+
+.tactical-canvas-placeholder::after {
+    content: "TACTICAL BOARD (READY FOR D&D)";
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.placeholder-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    opacity: 0.2;
+}
+
+/* Video Dummy */
+.video-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* GBT Content Box */
+.gbt-content-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.gbt-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+.gbt-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-primary);
+}
+
+.process-list {
+    list-style: none;
+    padding: 0;
+}
+
+.process-item {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.process-item::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
 /* Responsive */
+@media (max-width: 1024px) {
+    .training-split-container { grid-template-columns: 1fr; }
+    .training-media-panel { position: static; }
+}
+
 @media (max-width: 768px) {
     .card-grid { grid-template-columns: 1fr; }
     .header-content { height: auto; padding: 15px 20px; flex-direction: column; gap: 15px; }
