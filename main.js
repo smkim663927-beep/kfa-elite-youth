@@ -68,56 +68,57 @@ function renderDots(value) {
     return `<div class="rating-dots">${dots}</div>`;
 }
 
-function getPositionMarkerStyle(pos) {
-    // Simple mapping of positions to coordinates (x, y in percentage)
-    const positions = {
-        'ST': { top: '20%', left: '50%' },
-        'LW': { top: '25%', left: '20%' },
-        'RW': { top: '25%', left: '80%' },
-        'AM': { top: '40%', left: '50%' },
-        'LM': { top: '50%', left: '15%' },
-        'RM': { top: '50%', left: '85%' },
-        'CM': { top: '60%', left: '50%' },
-        'DM': { top: '75%', left: '50%' },
-        'LB': { top: '80%', left: '15%' },
-        'RB': { top: '80%', left: '85%' },
-        'CB': { top: '85%', left: '50%' },
-        'GK': { top: '95%', left: '50%' }
-    };
+function renderPositionMap(activePosString) {
+    const activePositions = activePosString.split('/').map(s => s.trim().toUpperCase());
     
-    // Default to center if not found
-    const mainPos = pos.split('/')[0].toUpperCase();
-    const style = positions[mainPos] || { top: '50%', left: '50%' };
-    return `top: ${style.top}; left: ${style.left};`;
-}
+    const allPositions = [
+        { id: 'ST', x: 50, y: 12 },
+        { id: 'LW', x: 20, y: 20 },
+        { id: 'RW', x: 80, y: 20 },
+        { id: 'AM', x: 50, y: 35 },
+        { id: 'LM', x: 15, y: 45 },
+        { id: 'RM', x: 85, y: 45 },
+        { id: 'LCM', x: 35, y: 55 },
+        { id: 'CM', x: 50, y: 55 },
+        { id: 'RCM', x: 65, y: 55 },
+        { id: 'DM', x: 50, y: 72 },
+        { id: 'LB', x: 15, y: 82 },
+        { id: 'RB', x: 85, y: 82 },
+        { id: 'LCB', x: 35, y: 88 },
+        { id: 'CB', x: 50, y: 88 },
+        { id: 'RCB', x: 65, y: 88 },
+        { id: 'GK', x: 50, y: 96 }
+    ];
 
-// ==========================================
-// 1. ATHLETES (IDP) 로직
-// ==========================================
+    const dotsHtml = allPositions.map(pos => {
+        const isActive = activePositions.includes(pos.id);
+        return `
+            <div class="pos-dot ${isActive ? 'active' : ''}" style="top: ${pos.y}%; left: ${pos.x}%;"></div>
+            <div class="pos-label-mini" style="top: ${pos.y}%; left: ${pos.x}%;">${pos.id}</div>
+        `;
+    }).join('');
 
-function renderPlayers() {
-    const listGrid = document.getElementById('idp-list-view');
-    if (!listGrid) return;
-    
-    listGrid.innerHTML = players.map((p, index) => `
-        <div class="card" style="cursor: pointer; position: relative;" onclick="viewAthlete(${index})">
-            <div class="tag-container">
-                <span class="tag accent">${p.basic.pos}</span>
-                <span class="tag">${getFootDisplay(p)}</span>
-            </div>
-            <h3 class="player-name">${p.name}</h3>
-            <p class="player-feedback" style="margin-bottom: 15px; font-size: 12px; color: var(--text-secondary);">
-                ${p.match.feedback}
-            </p>
-            <div class="stats-container">
-                ${renderStat('OVERALL TECH', p.stats.tech)}
-                ${renderStat('OVERALL PHYS', p.stats.phys)}
-            </div>
-            <div style="margin-top: 20px; font-size: 11px; font-weight: 800; color: var(--text-secondary); text-align: right;">
-                CLICK TO VIEW DETAILS →
+    return `
+        <div class="position-map-container">
+            <svg class="pitch-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <!-- Outer boundary -->
+                <rect x="5" y="5" width="90" height="90" class="pitch-line" />
+                <!-- Halfway line -->
+                <line x1="5" y1="50" x2="95" y2="50" class="pitch-line" />
+                <!-- Center circle -->
+                <circle cx="50" cy="50" r="12" class="pitch-line" />
+                <!-- Penalty areas -->
+                <rect x="25" y="5" width="50" height="15" class="pitch-line" />
+                <rect x="25" y="80" width="50" height="15" class="pitch-line" />
+                <!-- Goal areas -->
+                <rect x="38" y="5" width="24" height="6" class="pitch-line" />
+                <rect x="38" y="89" width="24" height="6" class="pitch-line" />
+            </svg>
+            <div class="pos-dots-layer">
+                ${dotsHtml}
             </div>
         </div>
-    `).join('');
+    `;
 }
 
 function viewAthlete(index) {
@@ -166,11 +167,8 @@ function viewAthlete(index) {
                             <span class="bio-value">${p.allectaOne || '미입력'}</span>
                         </div>
                     </div>
-                    <div class="position-map-container">
-                        <div class="pitch-outline"></div>
-                        <div class="pitch-center-line"></div>
-                        <div class="pitch-center-circle"></div>
-                        <div class="pos-marker" style="${getPositionMarkerStyle(p.basic.pos)}">${p.basic.pos.split('/')[0]}</div>
+                    <div id="pos-map-wrapper">
+                        ${renderPositionMap(p.basic.pos)}
                     </div>
                 </div>
             </div>

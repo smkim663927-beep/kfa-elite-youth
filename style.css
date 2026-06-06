@@ -487,55 +487,72 @@ header {
     gap: 15px;
 }
 
-/* Position Map */
+/* Position Map High-End UI */
 .position-map-container {
-    width: 200px;
-    height: 140px;
-    background-color: #2e7d32; /* Grass green */
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    height: 180px;
+    background-color: #1a3a1a; /* Darker grass */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     position: relative;
     overflow: hidden;
 }
 
+.pitch-svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .pitch-line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1.5;
+}
+
+.pos-dots-layer {
     position: absolute;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
 }
 
-.pitch-outline {
-    top: 5px; bottom: 5px; left: 5px; right: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.pitch-center-line {
-    top: 5px; bottom: 5px; left: 50%;
-    border-left: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.pitch-center-circle {
-    top: 50%; left: 50%; width: 40px; height: 40px;
+.pos-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.15); /* Inactive: Light grey/translucent */
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
 }
 
-.pos-marker {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    background-color: var(--warning-red);
-    color: white;
-    font-size: 10px;
-    font-weight: 900;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    border: 2px solid white;
+.pos-dot.active {
+    width: 14px;
+    height: 14px;
+    background-color: #E00000; /* Active: Intense Red */
+    box-shadow: 0 0 12px #E00000;
+    border: 2px solid #fff;
     z-index: 10;
+}
+
+.pos-label-mini {
+    position: absolute;
+    font-size: 8px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, 8px);
+    pointer-events: none;
+}
+
+.pos-dot.active + .pos-label-mini {
+    color: #fff;
+    font-size: 9px;
+    text-shadow: 0 0 4px rgba(0,0,0,0.8);
 }
 
 /* 5-Point Scale Metrics */
