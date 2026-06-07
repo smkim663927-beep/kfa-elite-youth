@@ -782,7 +782,78 @@ function renderMatches() {
     `).join('');
 }
 
+// ==========================================
+// 5. COMMUNICATION HUB 로직
+// ==========================================
+
+function renderCommunication() {
+    const list = document.getElementById('comm-list');
+    if (!list) return;
+
+    list.innerHTML = posts.map((p, index) => `
+        <div class="card" style="margin-bottom: 15px;">
+            <div class="tag-container" style="justify-content: space-between; width: 100%;">
+                <span class="tag accent">${p.author}</span>
+                <span style="font-size: 11px; color: var(--text-secondary);">${p.date}</span>
+            </div>
+            <h3 class="card-title" style="margin: 10px 0;">${p.title}</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-primary); margin-bottom: 15px;">
+                ${p.content.replace(/\n/g, '<br>')}
+            </p>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; gap: 15px;">
+                <span style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">💬 댓글 ${p.comments}</span>
+                <span style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">👍 추천 ${p.likes}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addPost() {
+    const title = document.getElementById('comm-title');
+    const content = document.getElementById('comm-content');
+
+    if (!title.value.trim() || !content.value.trim()) {
+        alert('제목과 내용을 모두 입력해주세요.');
+        return;
+    }
+
+    const newPost = {
+        title: title.value,
+        content: content.value,
+        author: "현장 지도자",
+        date: new Date().toLocaleDateString(),
+        comments: 0,
+        likes: 0
+    };
+
+    posts.unshift(newPost); // 최신글이 위로
+    renderCommunication();
+
+    title.value = '';
+    content.value = '';
+    alert('성공적으로 등록되었습니다.');
+}
+
 // --- 더미 데이터 ---
+const posts = [
+    {
+        title: "U-15 선수들의 심리적 압박감 해소 방안 공유",
+        content: "경기 전 루틴을 통해 선수들의 긴장을 완화하는 저만의 노하우를 공유합니다. 명상과 긍정적인 자기 암시가 큰 도움이 되더군요. 다른 지도자분들은 어떤 방식을 사용하시나요?",
+        author: "김지도",
+        date: "2026.06.05",
+        comments: 5,
+        likes: 12
+    },
+    {
+        title: "KFA 유소년 정책 제언: 리그 일정 관련",
+        content: "현재 주말 리그 일정이 선수들의 학업과 병행하기에 다소 빡빡한 면이 있습니다. 회복 시간을 고려한 일정 조정이 필요하다고 생각합니다.",
+        author: "최코치",
+        date: "2026.06.03",
+        comments: 8,
+        likes: 24
+    }
+];
+
 const players = [
     { 
         name: "손흥민", 
@@ -947,6 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLibrary();
     renderPhysical();
     renderMatches();
+    renderCommunication();
     
     // 처음 접속 시 IDP 섹션(리스트 뷰)만 표시
     showSection('idp');
