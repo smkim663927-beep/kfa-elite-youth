@@ -72,22 +72,23 @@ header {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 40px; /* 60px -> 40px (원복) */
+    gap: 30px; /* 40px -> 30px */
 }
 
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 35px; /* 간격 소폭 증가 */
+    gap: 25px; /* 35px -> 25px */
 }
 
 .nav-menu li {
-    font-size: 16px; /* 13px에서 16px로 확대 */
+    font-size: 14px; /* 16px -> 14px */
     font-weight: 800;
     color: var(--text-secondary);
     cursor: pointer;
     transition: color 0.3s;
     letter-spacing: 0.5px;
+    white-space: nowrap; /* 줄바꿈 방지 */
 }
 
 .nav-menu li:hover, .nav-menu li.active {
