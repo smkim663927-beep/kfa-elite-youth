@@ -740,10 +740,13 @@ function viewPhysical(index) {
             </div>
             <h3 class="card-title" style="font-size: 24px; margin-bottom: 20px;">${i.name}</h3>
             <table class="detail-table">
-                <tr><th>진행 방식</th><td>${i.method}</td></tr>
+                <tr><th>훈련 목표</th><td>${i.objective}</td></tr>
+                <tr><th>진행 방식</th><td>${i.method.replace(/\n/g, '<br>')}</td></tr>
+                <tr><th>빈도/강도</th><td>${i.frequency}</td></tr>
+                <tr><th>필요 장비</th><td>${i.equipment}</td></tr>
                 <tr><th>평가 지표</th><td>${i.metrics}</td></tr>
             </table>
-            ${i.warning ? '<p class="warning-text">⚠ 통증 발생 시 즉시 중단</p>' : ''}
+            ${i.warning ? '<p class="warning-text" style="margin-top: 20px;">⚠ 통증 발생 시 즉시 중단 (과도한 훈련 주의)</p>' : ''}
         </div>
     `;
     window.scrollTo(0, 0);
@@ -873,8 +876,56 @@ const library = [
 ];
 
 const physical = [
-    { name: "햄스트링 강화 프로토콜", tags: ["Rehab"], method: "노르딕 햄스트링 컬 3세트, 싱글 레그 데드리프트 12회", metrics: "근지구력 측정, 통증 지수(VAS) 체크", warning: true },
-    { name: "Plyometric Power Training", tags: ["Performance"], method: "박스 점프 10회, 버피 20회, 스프린트 30m 5회", metrics: "수직 점프 높이, 10m 스프린트 기록", warning: false }
+    { 
+        name: "발목 염좌 단계별 재활 (Ankle Rehab)", 
+        tags: ["Rehab", "Ankle"], 
+        objective: "발목 주변 근력 강화 및 고유 수용성 감각 회복",
+        method: "1단계: 비체중 부하 운동(등척성)\n2단계: 밴드 활용 저항 운동\n3단계: 밸런스 패드 위 외발 서기", 
+        frequency: "주 4회 / 세션당 30분",
+        equipment: "세라밴드, 밸런스 패드, 보수 볼",
+        metrics: "한 발 서기 유지 시간 (30초 목표), 통증 지수(VAS) 2 이하", 
+        warning: true 
+    },
+    { 
+        name: "코어 안정성 및 밸런스 (Core & Balance)", 
+        tags: ["Performance", "Core"], 
+        objective: "몸싸움 및 방향 전환 시 안정성 확보",
+        method: "데드버그 15회 3세트, 플랭크 1분 3세트, 사이드 플랭크 각 45초", 
+        frequency: "훈련 전 웜업 또는 주 3회 별도 세션",
+        equipment: "매트",
+        metrics: "플랭크 유지 시간, 움직임 보상 패턴 관찰", 
+        warning: false 
+    },
+    { 
+        name: "햄스트링 강화 프로토콜 (Hamstring Power)", 
+        tags: ["Performance", "Injury Prevention"], 
+        objective: "스프린트 시 햄스트링 부상 방지 및 폭발력 향상",
+        method: "노르딕 햄스트링 컬 (신장성 수축 강조) 8회 3세트, 싱글 레그 브릿지 15회 3세트", 
+        frequency: "주 2회 (경기 전날 제외)",
+        equipment: "파트너 도움 또는 앵커 바",
+        metrics: "노르딕 컬 각도 조절 능력, 최대 신장 구간 조절력", 
+        warning: true 
+    },
+    { 
+        name: "민첩성 및 방향 전환 (Agility / COD)", 
+        tags: ["Performance", "Agility"], 
+        objective: "빠른 방향 전환 능력 및 감속 기술 습득",
+        method: "T-드릴 (전진-측면-측면-후진) 5회 3세트, 셔틀 런 10m x 4회", 
+        frequency: "주 2회 고강도 세션",
+        equipment: "콘, 초시계",
+        metrics: "T-드릴 수행 시간 (초), 착지 시 무릎 정렬 상태", 
+        warning: false 
+    },
+    { 
+        name: "고관절 가동성 훈련 (Hip Mobility)", 
+        tags: ["Maintenance", "Flexibility"], 
+        objective: "부드러운 볼 컨트롤 및 부상 예방을 위한 가동 범위 확보",
+        method: "90/90 고관절 스트레칭 각 2분, 다이나믹 런지 스트레칭 12회", 
+        frequency: "매일 (훈련 전/후)",
+        equipment: "매트",
+        metrics: "고관절 외회전/내회전 가동 범위", 
+        warning: false 
+    }
 ];
 
 const matches = [
