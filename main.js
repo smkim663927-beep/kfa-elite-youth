@@ -791,21 +791,99 @@ function renderCommunication() {
     if (!list) return;
 
     list.innerHTML = posts.map((p, index) => `
-        <div class="card" style="margin-bottom: 15px;">
+        <div class="card" style="margin-bottom: 15px; cursor: pointer;" onclick="viewPost(${index})">
             <div class="tag-container" style="justify-content: space-between; width: 100%;">
                 <span class="tag accent">${p.author}</span>
                 <span style="font-size: 11px; color: var(--text-secondary);">${p.date}</span>
             </div>
             <h3 class="card-title" style="margin: 10px 0;">${p.title}</h3>
-            <p style="font-size: 14px; line-height: 1.6; color: var(--text-primary); margin-bottom: 15px;">
-                ${p.content.replace(/\n/g, '<br>')}
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-primary); margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                ${p.content.replace(/\n/g, ' ')}
             </p>
             <div style="border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; gap: 15px;">
-                <span style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">💬 댓글 ${p.comments}</span>
-                <span style="font-size: 12px; color: var(--text-secondary); cursor: pointer;">👍 추천 ${p.likes}</span>
+                <span style="font-size: 12px; color: var(--text-secondary);">💬 댓글 ${p.replies ? p.replies.length : p.comments}</span>
+                <span style="font-size: 12px; color: var(--text-secondary);">👍 추천 ${p.likes}</span>
             </div>
         </div>
     `).join('');
+}
+
+function viewPost(index) {
+    const p = posts[index];
+    document.getElementById('comm-list-view').style.display = 'none';
+    document.getElementById('comm-detail-view').style.display = 'block';
+
+    const detailContent = document.getElementById('comm-detail-content');
+    detailContent.innerHTML = `
+        <div class="card">
+            <div class="tag-container" style="justify-content: space-between; width: 100%;">
+                <span class="tag accent">${p.author}</span>
+                <span style="font-size: 11px; color: var(--text-secondary);">${p.date}</span>
+            </div>
+            <h3 class="card-title" style="font-size: 24px; margin: 15px 0;">${p.title}</h3>
+            <p style="font-size: 16px; line-height: 1.8; color: var(--text-primary); margin-bottom: 20px;">
+                ${p.content.replace(/\n/g, '<br>')}
+            </p>
+            <div style="text-align: right;">
+                <button class="btn-add" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);" onclick="alert('추천되었습니다!')">👍 추천하기 (${p.likes})</button>
+            </div>
+        </div>
+    `;
+
+    renderComments(index);
+    
+    // 댓글 등록 버튼 이벤트 바인딩
+    const addCommentBtn = document.getElementById('add-comment-btn');
+    addCommentBtn.onclick = () => addComment(index);
+    
+    window.scrollTo(0, 0);
+}
+
+function renderComments(postIndex) {
+    const p = posts[postIndex];
+    const commentList = document.getElementById('comment-list');
+    
+    if (!p.replies || p.replies.length === 0) {
+        commentList.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px; text-align: center; padding: 20px;">등록된 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>';
+        return;
+    }
+
+    commentList.innerHTML = p.replies.map(r => `
+        <div style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: 800; font-size: 13px; color: var(--text-primary);">${r.author}</span>
+                <span style="font-size: 11px; color: var(--text-secondary);">${r.date}</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">${r.content.replace(/\n/g, '<br>')}</p>
+        </div>
+    `).join('');
+}
+
+function addComment(postIndex) {
+    const commentInput = document.getElementById('new-comment');
+    if (!commentInput.value.trim()) {
+        alert('댓글 내용을 입력해주세요.');
+        return;
+    }
+
+    if (!posts[postIndex].replies) {
+        posts[postIndex].replies = [];
+    }
+
+    posts[postIndex].replies.push({
+        author: "현장 지도자",
+        content: commentInput.value,
+        date: new Date().toLocaleDateString()
+    });
+
+    commentInput.value = '';
+    renderComments(postIndex);
+    renderCommunication(); // 메인 리스트의 댓글 수 업데이트를 위해
+}
+
+function backToCommList() {
+    document.getElementById('comm-detail-view').style.display = 'none';
+    document.getElementById('comm-list-view').style.display = 'block';
 }
 
 function addPost() {
@@ -823,7 +901,8 @@ function addPost() {
         author: "현장 지도자",
         date: new Date().toLocaleDateString(),
         comments: 0,
-        likes: 0
+        likes: 0,
+        replies: []
     };
 
     posts.unshift(newPost); // 최신글이 위로
