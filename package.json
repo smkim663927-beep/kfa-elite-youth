@@ -1,0 +1,14 @@
+{
+  "name": "kfa-elite-youth-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KFA Elite Youth Platform - local server with player/library/physical/match/community API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,3 +1,25 @@
+const API = '/api';
+
+async function apiGet(path) {
+    const res = await fetch(API + path);
+    if (!res.ok) throw new Error('요청 실패: ' + path);
+    return res.json();
+}
+
+async function apiSend(method, path, body) {
+    const res = await fetch(API + path, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: body !== undefined ? JSON.stringify(body) : undefined
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || '요청 실패: ' + path);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+}
+
 function showSection(sectionId) {
     const sections = document.querySelectorAll('main section');
     sections.forEach(s => {
@@ -265,11 +287,16 @@ function viewAthlete(index) {
     window.scrollTo(0, 0);
 }
 
-function deleteAthlete(index) {
-    if (confirm('정말로 이 선수를 삭제하시겠습니까?')) {
+async function deleteAthlete(index) {
+    if (!confirm('정말로 이 선수를 삭제하시겠습니까?')) return;
+    const player = players[index];
+    try {
+        await apiSend('DELETE', `/players/${player.id}`);
         players.splice(index, 1);
         renderPlayers();
         backToAthleteList();
+    } catch (err) {
+        alert(err.message);
     }
 }
 
@@ -325,7 +352,7 @@ function editAthlete(index) {
     document.getElementById('edit-focus').value = p.goal.task;
 }
 
-function updatePlayer(e) {
+async function updatePlayer(e) {
     e.preventDefault();
     const index = document.getElementById('edit-index').value;
     const p = players[index];
@@ -380,8 +407,14 @@ function updatePlayer(e) {
     p.match.feedback = document.getElementById('edit-feedback').value;
     p.goal.task = document.getElementById('edit-focus').value;
 
-    renderPlayers();
-    viewAthlete(index); // 수정 후 다시 상세 페이지로
+    try {
+        const updated = await apiSend('PUT', `/players/${p.id}`, p);
+        players[index] = updated;
+        renderPlayers();
+        viewAthlete(index); // 수정 후 다시 상세 페이지로
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 function cancelEdit() {
@@ -425,7 +458,7 @@ function cancelRegister() {
     backToAthleteList();
 }
 
-function submitPlayer(e) {
+async function submitPlayer(e) {
     e.preventDefault();
     
     const name = document.getElementById('reg-name').value;
@@ -494,9 +527,14 @@ function submitPlayer(e) {
         }
     };
 
-    players.unshift(newPlayer);
-    renderPlayers();
-    cancelRegister();
+    try {
+        const created = await apiSend('POST', '/players', newPlayer);
+        players.unshift(created);
+        renderPlayers();
+        cancelRegister();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 // ==========================================
@@ -801,7 +839,7 @@ function renderCommunication() {
                 ${p.content.replace(/\n/g, ' ')}
             </p>
             <div style="border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; gap: 15px;">
-                <span style="font-size: 12px; color: var(--text-secondary);">💬 댓글 ${p.replies ? p.replies.length : p.comments}</span>
+                <span style="font-size: 12px; color: var(--text-secondary);">💬 댓글 ${p.replies.length}</span>
                 <span style="font-size: 12px; color: var(--text-secondary);">👍 추천 ${p.likes}</span>
             </div>
         </div>
@@ -825,7 +863,7 @@ function viewPost(index) {
                 ${p.content.replace(/\n/g, '<br>')}
             </p>
             <div style="text-align: right;">
-                <button class="btn-add" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);" onclick="alert('추천되었습니다!')">👍 추천하기 (${p.likes})</button>
+                <button class="btn-add" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);" onclick="likePost(${index})">👍 추천하기 (${p.likes})</button>
             </div>
         </div>
     `;
@@ -859,26 +897,34 @@ function renderComments(postIndex) {
     `).join('');
 }
 
-function addComment(postIndex) {
+async function addComment(postIndex) {
     const commentInput = document.getElementById('new-comment');
     if (!commentInput.value.trim()) {
         alert('댓글 내용을 입력해주세요.');
         return;
     }
 
-    if (!posts[postIndex].replies) {
-        posts[postIndex].replies = [];
+    const post = posts[postIndex];
+    try {
+        const updated = await apiSend('POST', `/posts/${post.id}/comments`, { content: commentInput.value });
+        posts[postIndex] = updated;
+        commentInput.value = '';
+        renderComments(postIndex);
+        renderCommunication(); // 메인 리스트의 댓글 수 업데이트를 위해
+    } catch (err) {
+        alert(err.message);
     }
+}
 
-    posts[postIndex].replies.push({
-        author: "현장 지도자",
-        content: commentInput.value,
-        date: new Date().toLocaleDateString()
-    });
-
-    commentInput.value = '';
-    renderComments(postIndex);
-    renderCommunication(); // 메인 리스트의 댓글 수 업데이트를 위해
+async function likePost(postIndex) {
+    const post = posts[postIndex];
+    try {
+        const updated = await apiSend('POST', `/posts/${post.id}/like`);
+        posts[postIndex] = updated;
+        viewPost(postIndex);
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 function backToCommList() {
@@ -886,7 +932,7 @@ function backToCommList() {
     document.getElementById('comm-list-view').style.display = 'block';
 }
 
-function addPost() {
+async function addPost() {
     const title = document.getElementById('comm-title');
     const content = document.getElementById('comm-content');
 
@@ -895,210 +941,49 @@ function addPost() {
         return;
     }
 
-    const newPost = {
-        title: title.value,
-        content: content.value,
-        author: "현장 지도자",
-        date: new Date().toLocaleDateString(),
-        comments: 0,
-        likes: 0,
-        replies: []
-    };
+    try {
+        const created = await apiSend('POST', '/posts', {
+            title: title.value,
+            content: content.value
+        });
+        posts.unshift(created); // 최신글이 위로
+        renderCommunication();
 
-    posts.unshift(newPost); // 최신글이 위로
-    renderCommunication();
-
-    title.value = '';
-    content.value = '';
-    alert('성공적으로 등록되었습니다.');
+        title.value = '';
+        content.value = '';
+        alert('성공적으로 등록되었습니다.');
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
-// --- 더미 데이터 ---
-const posts = [
-    {
-        title: "U-15 선수들의 심리적 압박감 해소 방안 공유",
-        content: "경기 전 루틴을 통해 선수들의 긴장을 완화하는 저만의 노하우를 공유합니다. 명상과 긍정적인 자기 암시가 큰 도움이 되더군요. 다른 지도자분들은 어떤 방식을 사용하시나요?",
-        author: "김지도",
-        date: "2026.06.05",
-        comments: 5,
-        likes: 12
-    },
-    {
-        title: "KFA 유소년 정책 제언: 리그 일정 관련",
-        content: "현재 주말 리그 일정이 선수들의 학업과 병행하기에 다소 빡빡한 면이 있습니다. 회복 시간을 고려한 일정 조정이 필요하다고 생각합니다.",
-        author: "최코치",
-        date: "2026.06.03",
-        comments: 8,
-        likes: 24
-    }
-];
-
-const players = [
-    { 
-        name: "손흥민", 
-        dob: "2014.07.08",
-        school: "KFA 초등학교",
-        allectaOne: "Allecta Elite Team",
-        basic: { age: "U12", grade: "초6", pos: "LW/ST", foot: "양발", footRatingLeft: 5, footRatingRight: 5, team: "KFA FC", exp: "3년" },
-        body: { height: "152cm", weight: "42kg", growth: "진행중", injury: "없음", maturity: "중" },
-        tech: { dribble: 5, pass: 5, control: 5, heading: 4, defense1v1: 4 },
-        tactic: { attacking: 5, space: 5, movement: 5, positioning: 4, understanding: 5 },
-        phys: { speed: 5, agility: 5, explosiveness: 5, awareness: 5, balance: 5 },
-        mental: { creativity: 5, aggressiveness: 4, confidence: 5, cooperation: 5, decision: 5 },
-        life: { sleep: "9시간", nutrition: "철저", study: "보통", stress: "낮음" },
-        match: { time: "60분", pos: "LW", play: "멀티골 및 수비 가담", feedback: "박스 안 침착성이 돋보임." },
-        goal: { month: "스프린트 후 회복 속도 향상", task: "인터벌 트레이닝 2회 추가", feedback: "체력 안배 요망" },
-        stats: { tech: 96, tactical: 90, phys: 92, mental: 98 }
-    },
-    { 
-        name: "이강인", 
-        dob: "2015.02.19",
-        school: "KFA 초등학교",
-        allectaOne: "Allecta Youth A",
-        basic: { age: "U11", grade: "초5", pos: "AM/RW", foot: "왼발", footRatingLeft: 5, footRatingRight: 3, team: "KFA FC", exp: "4년" },
-        body: { height: "145cm", weight: "38kg", growth: "진행중", injury: "없음", maturity: "중" },
-        tech: { dribble: 5, pass: 5, control: 5, heading: 3, defense1v1: 3 },
-        tactic: { attacking: 4, space: 5, movement: 5, positioning: 3, understanding: 5 },
-        phys: { speed: 4, agility: 5, explosiveness: 4, awareness: 5, balance: 5 },
-        mental: { creativity: 5, aggressiveness: 4, confidence: 5, cooperation: 5, decision: 5 },
-        life: { sleep: "10시간", nutrition: "우수", study: "우수", stress: "보통" },
-        match: { time: "50분", pos: "AM", play: "키패스 5회, 공격 조율", feedback: "수비 전환 속도 보완 필요." },
-        goal: { month: "수비 가담 빈도 및 효율성 증대", task: "트랜지션 훈련 집중", feedback: "수비 시 위치 선정 개선" },
-        stats: { tech: 98, tactical: 92, phys: 80, mental: 90 }
-    },
-    { 
-        name: "김민재", 
-        dob: "2016.11.15",
-        school: "KFA 초등학교",
-        allectaOne: "Allecta Youth B",
-        basic: { age: "U10", grade: "초4", pos: "CB", foot: "오른발", footRatingLeft: 4, footRatingRight: 5, team: "KFA Youth Acad", exp: "2년" },
-        body: { height: "142cm", weight: "36kg", growth: "성장기", injury: "없음", maturity: "중" },
-        tech: { dribble: 3, pass: 4, control: 4, heading: 5, defense1v1: 5 },
-        tactic: { attacking: 3, space: 4, movement: 4, positioning: 5, understanding: 5 },
-        phys: { speed: 4, agility: 4, explosiveness: 5, awareness: 5, balance: 4 },
-        mental: { creativity: 3, aggressiveness: 5, confidence: 5, cooperation: 5, decision: 4 },
-        life: { sleep: "10시간", nutrition: "보통", study: "우수", stress: "낮음" },
-        match: { time: "40분", pos: "CB", play: "대인 방어 및 제공권 장악", feedback: "성장기 체중 관리에 따른 순발력 유지가 관건." },
-        goal: { month: "코어 근육 강화 및 빌드업 정확도 향상", task: "롱패스 정확도 훈련", feedback: "리더십 발휘 긍정적" },
-        stats: { tech: 82, tactical: 85, phys: 88, mental: 92 }
-    }
-];
-
-const library = [
-    { 
-        name: "U-12 론도를 통한 3인 연계 탈압박", 
-        age: "U-12",
-        level: "중급",
-        tags: ["#U-12", "#빌드업", "#공간창출", "#GBT"], 
-        videoId: "fXidR_M-mAc", // New reliable video ID (Coaching Manual)
-        diagramType: "u12-rondo",
-        purpose: "공간 창출 및 패스 네트워크 형성", 
-        objective: "중앙 밀집 지역에서 3자 패스(Third Man Run)를 활용한 압박 탈출",
-        personnel: "8명 (4:4 또는 5:3)",
-        equip: "콘 4개, 조끼 2색, 공 5개",
-        space: "15m x 15m 사각형",
-        organization: "1. 15x15 구역 내에서 4대2 론도 실시\n2. 5회 패스 성공 시 반대편 전진 패스 허용\n3. 수비 성공 시 압박자와 역할 교대",
-        flow: "4대2 → 5대3 → 방향 전환 추가",
-        points: "열린 자세 유지, 패스 후 즉각적인 이동, 시야 확보(스캐닝)", 
-        rules: "투터치 제한, 원터치 성공 시 가산점",
-        metrics: "패스 성공률, 전진 패스 성공 횟수",
-        review: "초등부 선수들의 경우 첫 터치의 방향 설정에 따라 압박 탈출 성공률이 크게 좌우됨."
-    },
-    { 
-        name: "전방 압박 체계 구축 및 트랜지션", 
-        age: "U-15",
-        level: "고급",
-        tags: ["#U-15", "#전방압박", "#트랜지션", "#GBT"], 
-        videoId: "6D22e6I-Nn0", 
-        diagramType: "u15-pressing",
-        purpose: "상대 빌드업 차단 및 즉각적인 역습", 
-        objective: "상대 센터백의 패스 길목 차단 후 볼 탈취 시 5초 이내 슈팅",
-        personnel: "14명 (7:7)",
-        equip: "정규 골대 2개, 콘 다수",
-        space: "반 코트 (50m x 40m)",
-        organization: "1. 수비 팀은 하프라인부터 강한 압박 시작\n2. 볼 탈취 시 최전방 공격수에게 즉시 연결\n3. 공격 팀은 윙백을 활용한 탈압박 시도",
-        flow: "부분 전술 훈련 → 7대7 미니 게임",
-        points: "수비 간격 유지, 커버 섀도우 활용, 빠른 공수 전환", 
-        rules: "볼 탈취 후 골 성공 시 2점",
-        metrics: "볼 탈취 지점 평균 높이, 슈팅 전환 시간",
-        review: "선수들의 체력 소모가 크므로 세션 간 휴식 시간을 철저히 관리해야 함."
-    }
-];
-
-const physical = [
-    { 
-        name: "발목 염좌 단계별 재활 (Ankle Rehab)", 
-        tags: ["Rehab", "Ankle"], 
-        objective: "발목 주변 근력 강화 및 고유 수용성 감각 회복",
-        method: "1단계: 비체중 부하 운동(등척성)\n2단계: 밴드 활용 저항 운동\n3단계: 밸런스 패드 위 외발 서기", 
-        frequency: "주 4회 / 세션당 30분",
-        equipment: "세라밴드, 밸런스 패드, 보수 볼",
-        metrics: "한 발 서기 유지 시간 (30초 목표), 통증 지수(VAS) 2 이하", 
-        warning: true 
-    },
-    { 
-        name: "코어 안정성 및 밸런스 (Core & Balance)", 
-        tags: ["Performance", "Core"], 
-        objective: "몸싸움 및 방향 전환 시 안정성 확보",
-        method: "데드버그 15회 3세트, 플랭크 1분 3세트, 사이드 플랭크 각 45초", 
-        frequency: "훈련 전 웜업 또는 주 3회 별도 세션",
-        equipment: "매트",
-        metrics: "플랭크 유지 시간, 움직임 보상 패턴 관찰", 
-        warning: false 
-    },
-    { 
-        name: "햄스트링 강화 프로토콜 (Hamstring Power)", 
-        tags: ["Performance", "Injury Prevention"], 
-        objective: "스프린트 시 햄스트링 부상 방지 및 폭발력 향상",
-        method: "노르딕 햄스트링 컬 (신장성 수축 강조) 8회 3세트, 싱글 레그 브릿지 15회 3세트", 
-        frequency: "주 2회 (경기 전날 제외)",
-        equipment: "파트너 도움 또는 앵커 바",
-        metrics: "노르딕 컬 각도 조절 능력, 최대 신장 구간 조절력", 
-        warning: true 
-    },
-    { 
-        name: "민첩성 및 방향 전환 (Agility / COD)", 
-        tags: ["Performance", "Agility"], 
-        objective: "빠른 방향 전환 능력 및 감속 기술 습득",
-        method: "T-드릴 (전진-측면-측면-후진) 5회 3세트, 셔틀 런 10m x 4회", 
-        frequency: "주 2회 고강도 세션",
-        equipment: "콘, 초시계",
-        metrics: "T-드릴 수행 시간 (초), 착지 시 무릎 정렬 상태", 
-        warning: false 
-    },
-    { 
-        name: "고관절 가동성 훈련 (Hip Mobility)", 
-        tags: ["Maintenance", "Flexibility"], 
-        objective: "부드러운 볼 컨트롤 및 부상 예방을 위한 가동 범위 확보",
-        method: "90/90 고관절 스트레칭 각 2분, 다이나믹 런지 스트레칭 12회", 
-        frequency: "매일 (훈련 전/후)",
-        equipment: "매트",
-        metrics: "고관절 외회전/내회전 가동 범위", 
-        warning: false 
-    }
-];
-
-const matches = [
-    { 
-        date: "2026.06.01", 
-        team: "U13 / ○○FC", 
-        formation: "4-3-3", 
-        objective: "후방 빌드업 시도", 
-        good: "센터백-6번 연결 성공", 
-        bad: "압박 받을 때 측면 전환 부족", 
-        feedback: "7번 선수: 공 받기 전 스캔 부족",
-        next: "방향 전환 론도, 압박 회피 훈련" 
-    }
-];
+// --- 서버 연동 데이터 (초기값은 빈 배열, DOMContentLoaded 시점에 API로 채워짐) ---
+let posts = [];
+let players = [];
+let library = [];
+let physical = [];
+let matches = [];
 
 // --- 초기화 ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        [players, library, physical, matches, posts] = await Promise.all([
+            apiGet('/players'),
+            apiGet('/library'),
+            apiGet('/physical'),
+            apiGet('/matches'),
+            apiGet('/posts')
+        ]);
+    } catch (err) {
+        alert('서버에서 데이터를 불러오지 못했습니다. 서버(node server.js)가 실행 중인지 확인해주세요.\n' + err.message);
+    }
+
     renderPlayers();
     renderLibrary();
     renderPhysical();
     renderMatches();
     renderCommunication();
-    
+
     // 처음 접속 시 IDP 섹션(리스트 뷰)만 표시
     showSection('idp');
 });
